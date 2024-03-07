@@ -1,6 +1,6 @@
 import Layout from "../components/layout";
 import React, { useState } from "react";
-
+import PlayerElement from "../components/playerElement";
 export default function Insights() {
   const [selectedTeam, setSelectedTeam] = useState("");
   const [selectedPosition, setSelectedPosition] = useState("");
@@ -8,10 +8,11 @@ export default function Insights() {
   const retreiveInfo = (type, info) => {
     if (type === "team") {
       setSelectedTeam(info);
+      //query database
     } else if (type === "position") {
       setSelectedPosition(info);
     }
-
+    console.log(info);
     // retreive info from database
   };
 
@@ -57,8 +58,56 @@ export default function Insights() {
     { value: "5", label: "DEF" },
     { value: "6", label: "KICK" },
   ];
+  const examplePlayers = [
+    {
+      name: "Josh Allen",
+      team: "BUF",
+      pos: "QB",
+      pts: "450.6",
+      //pts_per_game: "26.5",
+      //gp: "17",
+      //cmp: "385",
+    },
+    {
+      name: "Bob Allen",
+      team: "BUF",
+      pos: "QB",
+      pts: "450.6",
+      //pts_per_game: "26.5",
+      //gp: "17",
+      //cmp: "385",
+    },
+    {
+      name: "Bill Allen",
+      team: "BUF",
+      pos: "QB",
+      pts: "450.6",
+      //pts_per_game: "26.5",
+      //gp: "17",
+      //cmp: "385",
+    },
+    {
+      name: "Jim Allen",
+      team: "BUF",
+      pos: "QB",
+      pts: "450.6",
+      //pts_per_game: "26.5",
+      //gp: "17",
+      //cmp: "385",
+    },
+    {
+      name: "John Allen",
+      team: "BUF",
+      pos: "QB",
+      pts: "450.6",
+      //pts_per_game: "26.5",
+      //gp: "17",
+      //cmp: "385",
+    },
+  ];
   return (
     <Layout>
+      <h1>Fantasy Football Insights</h1>
       <div className="">
         Top 5 Players By Team
         <select
@@ -71,7 +120,24 @@ export default function Insights() {
             </option>
           ))}
         </select>
+        <div style={styles.statsContainer}>
+          <div style={styles.innerContainer}>Name</div>
+          <div style={styles.innerContainer}>Team</div>
+          <div style={styles.innerContainer}>Position</div>
+          <div style={styles.innerContainer}>Points</div>
+
+          {examplePlayers.map((player) => (
+            <PlayerElement
+              key={player.name}
+              name={player.name}
+              team={player.team}
+              position={player.pos}
+              points={player.pts}
+            />
+          ))}
+        </div>
       </div>
+      <br />
       <div className="">
         Top 5 Players By Position
         <select
@@ -84,7 +150,38 @@ export default function Insights() {
             </option>
           ))}
         </select>
+        <div style={styles.statsContainer}>
+          <div style={styles.innerContainer}>Name</div>
+          <div style={styles.innerContainer}>Team</div>
+          <div style={styles.innerContainer}>Position</div>
+          <div style={styles.innerContainer}>Points</div>
+
+          {examplePlayers.map((player) => (
+            <PlayerElement
+              key={player.name}
+              name={player.name}
+              team={player.team}
+              position={player.pos}
+              points={player.pts}
+            />
+          ))}
+        </div>
       </div>
     </Layout>
   );
 }
+
+const styles = {
+  statsContainer: {
+    display: "grid",
+    grid: "1fr 1fr 1fr 1fr 1fr 1fr / 1fr 1fr 1fr 1fr ",
+    border: "1px solid black",
+    placeItems: "center",
+  },
+  innerContainer: {
+    border: "1px solid black",
+    width: "100%",
+    height: "100%",
+    textAlign: "center",
+  },
+};
