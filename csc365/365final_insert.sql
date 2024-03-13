@@ -1,11 +1,11 @@
 -- League Insert Statements
-INSERT INTO LEAGUE
+INSERT INTO LEAGUE (LEAGUE_NAME)
 VALUES
-	(1, "Brent's League"),
-    (2, "Matt's League"),
-    (3, "Nipun's League"),
-    (4, "CSC365"),
-    (5, "Cal Poly Fantasy FB");
+	("Brent's League"),
+    ("Matt's League"),
+    ("Nipun's League"),
+    ("CSC365"),
+    ("Cal Poly Fantasy FB");
 -- NFL_TEAM Insert Statements NEED TO RUN
 INSERT INTO NFL_TEAM
 VALUES
@@ -374,3 +374,12 @@ INSERT INTO DEFENSE VALUES
 ("ARI",33,11,6,1,0,65),
 ("WAS",39,8,10,0,0,64);
 
+-- Inserting managers into leagues
+INSERT INTO FANTASY_MANAGER (TEAM_NAME, LEAGUE_ID, QB, RB1, RB2, WR1, WR2, TE, FLX, DEF, KICK)
+VALUES
+	("Brent's team", 1, 2, 7, 25, 44, 15, 82, 80, "BUF", 120),
+    ("Brent's other team", 1, 4, 7, 25, 44, 15, 82, 80, "BAL", 120),
+    ("Matt's team", 2, 3, 7, 25, 44, 15, 82, 80, "DAL", 120),
+    ("Matt's other team", 2, 5, 7, 25, 44, 15, 82, 80, "NYJ", 120),
+    ("Nipun's team", 3, 8, 7, 25, 44, 15, 82, 80, "SF", 120),
+    ("Nipun's other team", 3, 6, 7, 25, 44, 15, 82, 80, "CLE", 120);

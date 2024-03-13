@@ -8,6 +8,7 @@ export default function Layout({ children }) {
       <div className="navbar">
         <Link to="/">Home</Link>
         <Link to="/insights">Insights</Link>
+        <Link to="/league">Manage Leagues</Link>
       </div>
       <div>{children}</div>
     </>

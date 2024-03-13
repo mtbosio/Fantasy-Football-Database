@@ -1,13 +1,13 @@
 import express from "express";
-import mysql from "mysql";
+import mysql2 from "mysql2";
 import cors from "cors";
 
 const app = express();
 
-const db = mysql.createConnection({
+const db = mysql2.createConnection({
   host: "localhost",
   user: "root",
-  password: "Super089",
+  password: "N11k14D04",
   database: "FANTASY_FOOTBALL",
 });
 
@@ -68,6 +68,47 @@ app.get("/defense", (req, res) => {
   });
 });
 
+// get all leagues
+app.get("/league", (req, res) => {
+  const q =
+    "SELECT * FROM LEAGUE";
+  db.query(q, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+
+// get fantasy managers for a league by league id
+app.get("/league/:id", (req, res) => {
+  const id = req.params["id"];
+  const q =
+    `SELECT f.TEAM_NAME,
+      p.PLAYER_NAME AS QB,
+      p2.PLAYER_NAME AS RB1,
+      p3.PLAYER_NAME AS RB2,
+      p4.PLAYER_NAME AS WR1,
+      p5.PLAYER_NAME AS WR2,
+      p6.PLAYER_NAME AS TE,
+      p7.PLAYER_NAME AS FLX,
+      d.NFL_TEAM_ID AS DEF,
+      p8.PLAYER_NAME AS KICK
+      FROM fantasy_manager f
+      JOIN player p ON f.QB = p.PLAYER_ID
+      JOIN player p2 ON f.RB1 = p2.PLAYER_ID
+      JOIN player p3 ON f.RB2 = p3.PLAYER_ID
+      JOIN player p4 ON f.WR1 = p4.PLAYER_ID
+      JOIN player p5 ON f.WR2 = p5.PLAYER_ID
+      JOIN player p6 ON f.TE = p6.PLAYER_ID
+      JOIN player p7 ON f.FLX = p7.PLAYER_ID
+      JOIN defense d ON f.DEF = d.NFL_TEAM_ID
+      JOIN player p8 ON f.KICK = p8.PLAYER_ID
+      WHERE LEAGUE_ID = ?`;
+  db.query(q, [id], (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+
 // post example
 app.post("/manager", (req, res) => {
   const q =
@@ -89,6 +130,19 @@ app.post("/manager", (req, res) => {
   db.query(q, [values], (err, data) => {
     if (err) return res.json(err);
     return res.json("Manager succesfully inserted");
+  });
+});
+
+// create a new league
+app.post("/league", (req, res) => {
+  const q =
+    "INSERT INTO LEAGUE (LEAGUE_NAME) VALUES (?)";
+  const values = [
+    req.body.LEAGUE_NAME
+  ];
+  db.query(q, [values], (err, data) => {
+    if (err) return res.json(err);
+    return res.json("League succesfully inserted");
   });
 });
 
