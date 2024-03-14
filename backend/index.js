@@ -70,8 +70,7 @@ app.get("/defense", (req, res) => {
 
 // get all leagues
 app.get("/league", (req, res) => {
-  const q =
-    "SELECT * FROM LEAGUE";
+  const q = "SELECT * FROM LEAGUE";
   db.query(q, (err, data) => {
     if (err) return res.json(err);
     return res.json(data);
@@ -81,28 +80,38 @@ app.get("/league", (req, res) => {
 // get fantasy managers for a league by league id
 app.get("/league/:id", (req, res) => {
   const id = req.params["id"];
-  const q =
-    `SELECT f.TEAM_NAME,
-      p.PLAYER_NAME AS QB,
-      p2.PLAYER_NAME AS RB1,
-      p3.PLAYER_NAME AS RB2,
-      p4.PLAYER_NAME AS WR1,
-      p5.PLAYER_NAME AS WR2,
-      p6.PLAYER_NAME AS TE,
-      p7.PLAYER_NAME AS FLX,
-      d.NFL_TEAM_ID AS DEF,
-      p8.PLAYER_NAME AS KICK
-      FROM fantasy_manager f
-      JOIN player p ON f.QB = p.PLAYER_ID
-      JOIN player p2 ON f.RB1 = p2.PLAYER_ID
-      JOIN player p3 ON f.RB2 = p3.PLAYER_ID
-      JOIN player p4 ON f.WR1 = p4.PLAYER_ID
-      JOIN player p5 ON f.WR2 = p5.PLAYER_ID
-      JOIN player p6 ON f.TE = p6.PLAYER_ID
-      JOIN player p7 ON f.FLX = p7.PLAYER_ID
-      JOIN defense d ON f.DEF = d.NFL_TEAM_ID
-      JOIN player p8 ON f.KICK = p8.PLAYER_ID
-      WHERE LEAGUE_ID = ?`;
+  const q = `SELECT f.TEAM_NAME,
+	  p.PLAYER_NAME AS QB,
+    p2.PLAYER_NAME AS RB1,
+    p3.PLAYER_NAME AS RB2,
+    p4.PLAYER_NAME AS WR1,
+    p5.PLAYER_NAME AS WR2,
+    p6.PLAYER_NAME AS TE,
+    p7.PLAYER_NAME AS FLX,
+    d.NFL_TEAM_ID AS DEF,
+    p8.PLAYER_NAME AS KICK,
+    ROUND(o.POINTS + o2.POINTS + o3.POINTS + o4.POINTS + o5.POINTS + o6.POINTS + o7.POINTS
+    + d.POINTS + k.POINTS, 2) AS TOTAL_POINTS
+    FROM fantasy_manager f
+    JOIN player p ON f.QB = p.PLAYER_ID
+    JOIN offensive_player o ON p.PLAYER_ID = o.O_PLAYER_ID
+    JOIN player p2 ON f.RB1 = p2.PLAYER_ID
+    JOIN offensive_player o2 ON p2.PLAYER_ID = o2.O_PLAYER_ID
+    JOIN player p3 ON f.RB2 = p3.PLAYER_ID
+    JOIN offensive_player o3 ON p3.PLAYER_ID = o3.O_PLAYER_ID
+    JOIN player p4 ON f.WR1 = p4.PLAYER_ID
+    JOIN offensive_player o4 ON p4.PLAYER_ID = o4.O_PLAYER_ID
+    JOIN player p5 ON f.WR2 = p5.PLAYER_ID
+    JOIN offensive_player o5 ON p5.PLAYER_ID = o5.O_PLAYER_ID
+    JOIN player p6 ON f.TE = p6.PLAYER_ID
+    JOIN offensive_player o6 ON p6.PLAYER_ID = o6.O_PLAYER_ID
+    JOIN player p7 ON f.FLX = p7.PLAYER_ID
+    JOIN offensive_player o7 ON p7.PLAYER_ID = o7.O_PLAYER_ID
+    JOIN defense d ON f.DEF = d.NFL_TEAM_ID
+    JOIN player p8 ON f.KICK = p8.PLAYER_ID
+    JOIN kicker k ON p8.PLAYER_ID = k.K_PLAYER_ID
+    WHERE LEAGUE_ID = 3
+    ORDER BY TOTAL_POINTS DESC;`;
   db.query(q, [id], (err, data) => {
     if (err) return res.json(err);
     return res.json(data);
@@ -112,20 +121,19 @@ app.get("/league/:id", (req, res) => {
 // post example
 app.post("/manager", (req, res) => {
   const q =
-    "INSERT INTO FANTASY_MANAGER ('MANAGER_ID', 'TEAM_NAME', 'LEAGUE_ID', 'QB', 'RB1', 'RB2', 'WR1', 'WR2', 'TE', 'FLX', 'DEF', 'KICK',) VALUES (?)";
+    "INSERT INTO FANTASY_MANAGER (TEAM_NAME, LEAGUE_ID, QB, RB1, RB2, WR1, WR2, TE, FLX, DEF, KICK) VALUES (?)";
   const values = [
-    req.body.MANAGER_ID,
     req.body.TEAM_NAME,
     req.body.LEAGUE_ID,
-    req.body.QB,
-    req.body.RB1,
-    req.body.RB2,
-    req.body.WR1,
-    req.body.WR2,
-    req.body.TE,
-    req.body.FLX,
-    req.body.DEF,
-    req.body.KICK,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    "EMP",
+    0,
   ];
   db.query(q, [values], (err, data) => {
     if (err) return res.json(err);
@@ -135,18 +143,21 @@ app.post("/manager", (req, res) => {
 
 // create a new league
 app.post("/league", (req, res) => {
-  console.log('Hi');
-  const q =
-    "INSERT INTO LEAGUE (LEAGUE_NAME) VALUES (?)";
-  const values = [
-    req.body.LEAGUE_NAME
-  ];
+  const q = "INSERT INTO LEAGUE (LEAGUE_NAME) VALUES (?)";
+  const values = [req.body.LEAGUE_NAME];
   db.query(q, [values], (err, data) => {
     if (err) return res.json(err);
     return res.json("League succesfully inserted");
   });
 });
-
+// add a player to a team
+app.post("/player", (req, res) => {
+  const q = `UPDATE FANTASY_MANAGER SET ${req.body.SELECTED_POSITION} = ${req.body.PLAYER_ID} WHERE MANAGER_ID = ${req.body.MANAGER_ID}`;
+  db.query(q, (err, data) => {
+    if (err) return res.json(err);
+    return res.json("Player succesfully inserted");
+  });
+});
 app.listen(8800, () => {
   console.log("Connected to backend");
 });
