@@ -5,35 +5,29 @@ import LeagueForm from "../components/leagueForm";
 import LeagueViewer from "../components/leagueViewer";
 
 export default function LeagueManagement() {
+  const [leagues, setLeagues] = useState([]);
 
-    const [leagues, setLeagues] = useState([]);
+  useEffect(() => {
+    updateLeagues();
+  }, []);
 
-    useEffect(() => {
-        updateLeagues();
-    }, []);
-
-    // get leagues
-    function updateLeagues() {
-        try {
-            axios.get("http://localhost:8800/league")
-            .then((response) => {
-                setLeagues(response.data);
-            })
-        } catch (err) {
-            console.log(err);
-        }
+  // get leagues
+  function updateLeagues() {
+    try {
+      axios.get("http://localhost:8800/league").then((response) => {
+        setLeagues(response.data);
+      });
+    } catch (err) {
+      console.log(err);
     }
+  }
 
-    return (
-        <Layout>
-            <h1>
-                Add new league
-            </h1>
-            <LeagueForm updateLeagues={updateLeagues}/>
-            <h1>
-                Manage league
-            </h1>
-            <LeagueViewer leagues={leagues}/>
-        </Layout>
-    );
+  return (
+    <Layout>
+      <h1>Add new league</h1>
+      <LeagueForm updateLeagues={updateLeagues} />
+      <h1>Manage league</h1>
+      <LeagueViewer leagues={leagues} />
+    </Layout>
+  );
 }

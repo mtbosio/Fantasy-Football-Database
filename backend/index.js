@@ -7,7 +7,7 @@ const app = express();
 const db = mysql2.createConnection({
   host: "localhost",
   user: "root",
-  password: "N11k14D04",
+  password: "Super089",
   database: "FANTASY_FOOTBALL",
 });
 
@@ -70,8 +70,7 @@ app.get("/defense", (req, res) => {
 
 // get all leagues
 app.get("/league", (req, res) => {
-  const q =
-    "SELECT * FROM LEAGUE";
+  const q = "SELECT * FROM LEAGUE";
   db.query(q, (err, data) => {
     if (err) return res.json(err);
     return res.json(data);
@@ -81,8 +80,7 @@ app.get("/league", (req, res) => {
 // get fantasy managers for a league by league id
 app.get("/league/:id", (req, res) => {
   const id = req.params["id"];
-  const q =
-    `SELECT f.TEAM_NAME,
+  const q = `SELECT f.TEAM_NAME, f.MANAGER_ID,
       p.PLAYER_NAME AS QB,
       p2.PLAYER_NAME AS RB1,
       p3.PLAYER_NAME AS RB2,
@@ -112,20 +110,19 @@ app.get("/league/:id", (req, res) => {
 // post example
 app.post("/manager", (req, res) => {
   const q =
-    "INSERT INTO FANTASY_MANAGER ('MANAGER_ID', 'TEAM_NAME', 'LEAGUE_ID', 'QB', 'RB1', 'RB2', 'WR1', 'WR2', 'TE', 'FLX', 'DEF', 'KICK',) VALUES (?)";
+    "INSERT INTO FANTASY_MANAGER (TEAM_NAME, LEAGUE_ID, QB, RB1, RB2, WR1, WR2, TE, FLX, DEF, KICK) VALUES (?)";
   const values = [
-    req.body.MANAGER_ID,
     req.body.TEAM_NAME,
     req.body.LEAGUE_ID,
-    req.body.QB,
-    req.body.RB1,
-    req.body.RB2,
-    req.body.WR1,
-    req.body.WR2,
-    req.body.TE,
-    req.body.FLX,
-    req.body.DEF,
-    req.body.KICK,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    "EMP",
+    0,
   ];
   db.query(q, [values], (err, data) => {
     if (err) return res.json(err);
@@ -135,17 +132,21 @@ app.post("/manager", (req, res) => {
 
 // create a new league
 app.post("/league", (req, res) => {
-  const q =
-    "INSERT INTO LEAGUE (LEAGUE_NAME) VALUES (?)";
-  const values = [
-    req.body.LEAGUE_NAME
-  ];
+  const q = "INSERT INTO LEAGUE (LEAGUE_NAME) VALUES (?)";
+  const values = [req.body.LEAGUE_NAME];
   db.query(q, [values], (err, data) => {
     if (err) return res.json(err);
     return res.json("League succesfully inserted");
   });
 });
-
+// add a player to a team
+app.post("/player", (req, res) => {
+  const q = `UPDATE FANTASY_MANAGER SET ${req.body.SELECTED_POSITION} = ${req.body.PLAYER_ID} WHERE MANAGER_ID = ${req.body.MANAGER_ID}`;
+  db.query(q, (err, data) => {
+    if (err) return res.json(err);
+    return res.json("Player succesfully inserted");
+  });
+});
 app.listen(8800, () => {
   console.log("Connected to backend");
 });
