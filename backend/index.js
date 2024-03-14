@@ -135,6 +135,7 @@ app.post("/manager", (req, res) => {
 
 // create a new league
 app.post("/league", (req, res) => {
+  console.log('Hi');
   const q =
     "INSERT INTO LEAGUE (LEAGUE_NAME) VALUES (?)";
   const values = [
